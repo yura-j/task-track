@@ -1,8 +1,9 @@
+package ru.yandex.practicum.models;
+
 final public class SubTask extends AbstractTask {
     private Epic epic;
 
     public SubTask() {
-
     }
 
     public SubTask(String name, String description) {

@@ -1,3 +1,5 @@
+package ru.yandex.practicum.models;
+
 import java.util.ArrayList;
 
 abstract public class AbstractTask {
@@ -16,13 +18,12 @@ abstract public class AbstractTask {
         this.description = description;
     }
 
-    public AbstractTask replicateMeTo(AbstractTask task) {
+    public void replicateMeTo(AbstractTask task) {
         task.id = id;
         task.name = name;
         task.description = description;
         task.status = status;
         task.store = store;
-        return task;
     }
 
     protected ArrayList<AbstractTask> filterTypedElements() {

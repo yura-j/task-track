@@ -1,3 +1,11 @@
+package ru.yandex.practicum;
+
+import ru.yandex.practicum.controllers.TaskManager;
+import ru.yandex.practicum.models.Epic;
+import ru.yandex.practicum.models.SubTask;
+import ru.yandex.practicum.models.Task;
+import ru.yandex.practicum.models.TaskStatus;
+
 import java.util.ArrayList;
 
 public class Main {

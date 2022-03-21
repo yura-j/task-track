@@ -1,3 +1,5 @@
+package ru.yandex.practicum.models;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -8,7 +10,7 @@ final public class TaskStore {
 
 
     public ArrayList<AbstractTask> getTasks() {
-        return new ArrayList<AbstractTask>(taskList.values());
+        return new ArrayList<>(taskList.values());
     }
 
     public AbstractTask getTask(Integer id) {
