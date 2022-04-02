@@ -1,11 +1,13 @@
-package ru.yandex.practicum.models;
+package ru.yandex.practicum.managers;
+
+import ru.yandex.practicum.models.AbstractTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-final public class TaskStore {
-    private HashMap<Integer, AbstractTask> taskList = new HashMap<>();
-    private static TaskStore instance;
+final public class InMemoryTaskStore implements TaskStore {
+    private final HashMap<Integer, AbstractTask> taskList = new HashMap<>();
+    private static InMemoryTaskStore instance;
     private int maxId = 0;
 
 
@@ -32,12 +34,5 @@ final public class TaskStore {
 
     public int generateNewId() {
         return (++maxId);
-    }
-
-    public static TaskStore getInstance() {
-        if (instance == null) {
-            instance = new TaskStore();
-        }
-        return instance;
     }
 }

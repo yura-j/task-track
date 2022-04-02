@@ -1,5 +1,8 @@
 package ru.yandex.practicum.models;
 
+import ru.yandex.practicum.managers.TaskStore;
+import ru.yandex.practicum.util.Managers;
+
 import java.util.ArrayList;
 
 abstract public class AbstractTask {
@@ -7,7 +10,7 @@ abstract public class AbstractTask {
     protected String name = "";
     protected String description = "";
     protected TaskStatus status = TaskStatus.NEW;
-    protected TaskStore store = TaskStore.getInstance();
+    protected TaskStore store = Managers.getDefaultStore();
 
     public AbstractTask() {
 
@@ -62,6 +65,6 @@ abstract public class AbstractTask {
 
     @Override
     public String toString() {
-        return name + "@" + status;
+        return this.getClass().getSimpleName() + "@" + id + "@" + status;
     }
 }

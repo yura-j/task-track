@@ -1,101 +1,63 @@
 package ru.yandex.practicum;
 
-import ru.yandex.practicum.controllers.TaskManager;
-import ru.yandex.practicum.models.Epic;
-import ru.yandex.practicum.models.SubTask;
-import ru.yandex.practicum.models.Task;
-import ru.yandex.practicum.models.TaskStatus;
+import ru.yandex.practicum.managers.TaskManager;
+import ru.yandex.practicum.models.*;
+import ru.yandex.practicum.util.Managers;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
-        testManager();
+        testHistory();
     }
 
-    public static void testManager() {
-        TaskManager manager = new TaskManager();
-        Task taskTesting = new Task("Тестирование", "Создать в классе Main метод testManager");
-        Task taskTestImplementing = new Task("Реализация", "Метод testManager должен создать" +
-                " 2 задачи," +
-                " 2 подзадачи засунутые в один эпик" +
-                " и эпик с одной подзадачей");
-        SubTask subTaskTestTaskList = new SubTask("Тестирование геттера списка задач",
-                "Распечатайте списки задач, через System.out.println(..)");
-        SubTask subTaskTestOtherList = new SubTask("Тестирование геттера других типов задач",
-                "Распечатайте списки эпиков и подзадач, через System.out.println(..)");
-        Epic epicTestTakLists = new Epic("Тестирование спсиков", "Печатаем списки");
-        SubTask subTaskTestStatusLogic = new SubTask("Тестирование корректной обработки статусов",
-                "Измените статусы созданных объектов, распечатайте." +
-                        " Проверьте, что статус задачи и подзадачи сохранился," +
-                        " а статус эпика рассчитался по статусам подзадач.");
-        Epic epicTestDeleteEpic = new Epic("Тестирование удаления", "И, наконец, попробуйте удалить одну из задач и один из эпиков.");
+    public static void testHistory() {
+        TaskManager manager = Managers.getDefaultTaskManager();
+        Epic weNeedAtLeastOneEpic = new Epic("Тестирование спсиков", "Печатаем списки");
+        manager.createTask(weNeedAtLeastOneEpic);
 
-        taskTesting.add();
-        taskTestImplementing.add();
+        for (int i = 0; i < 50; i++) {
+            createRandomTask("", "");
+        }
+        System.out.println("Задачи");
+        manager.getAllTasks().forEach(System.out::println);
 
-        epicTestTakLists.add();
-        epicTestDeleteEpic.add();
+        for (int i = 0; i < 50; i++) {
+            AbstractTask task = getRandomTask();
+            System.out.println("Беру задачу " + task);
+            manager.getTask(task.getId());
+        }
+        System.out.println("История");
+        manager.history().forEach(System.out::println);
+    }
 
-        subTaskTestTaskList
-                .setEpic(epicTestTakLists)
-                .add();
-        subTaskTestOtherList
-                .setEpic(epicTestTakLists)
-                .add();
-        subTaskTestStatusLogic
-                .setEpic(epicTestDeleteEpic)
-                .add();
+    private static Epic getRandomEpic() {
+        List<Epic> epics = Managers.getDefaultTaskManager().getEpics();
+        int randomIndex = (int) (Math.random() * epics.size());
+        return epics.get(randomIndex);
+    }
 
+    private static AbstractTask getRandomTask() {
+        List<AbstractTask> tasks = Managers.getDefaultTaskManager().getAllTasks();
+        int randomIndex = (int) (Math.random() * tasks.size());
+        return tasks.get(randomIndex);
+    }
 
-        ArrayList<Epic> epics = manager.getEpics();
-        System.out.println("epics = " + epics);
-
-        ArrayList<Task> tasks = manager.getTasks();
-        System.out.println("tasks = " + tasks);
-
-        ArrayList<SubTask> subTasks = manager.getSubTasks();
-        System.out.println("subTasks = " + subTasks);
-
-        System.out.println("----------------");
-        System.out.println("Меняю статус подзадачи на IN_PROGRESS, ожидаю IN_PROGRESS У эпика");
-        SubTask subtaskWithOtherStatus = new SubTask();
-        subTaskTestTaskList.replicateMeTo(subtaskWithOtherStatus);
-        subTaskTestTaskList = null;
-        subtaskWithOtherStatus.setEpic(epicTestTakLists);
-        subtaskWithOtherStatus.setStatus(TaskStatus.IN_PROGRESS);
-        manager.updateTask(subtaskWithOtherStatus);
-
-
-        System.out.println("epicTestTakLists = " + epicTestTakLists);
-
-        System.out.println("----------------");
-        System.out.println("Меняю статус подзадачи на DONE, ожидаю IN_PROGRESS У эпика");
-        subtaskWithOtherStatus.setStatus(TaskStatus.DONE);
-        System.out.println("epicTestTakLists = " + epicTestTakLists);
-
-        System.out.println("----------------");
-        System.out.println("Меняю второй статус подзадачи на DONE, ожидаю DONE У эпика");
-        subTaskTestOtherList.setStatus(TaskStatus.DONE);
-        System.out.println("epicTestTakLists = " + epicTestTakLists);
-
-        System.out.println("----------------");
-        System.out.println("Удаляю эпик \"Тестирование удаления\"");
-        manager.removeTask(epicTestDeleteEpic.getId());
-        System.out.println("epics = " + manager.getEpics());
-        System.out.println("----------------");
-        System.out.println("Удаляю задачу \"Тестирование\"");
-        manager.removeTask(taskTesting.getId());
-
-        System.out.println("tasks = " + manager.getTasks());
-
-        System.out.println("----------------");
-        System.out.println("Удаляю все задачи");
-        manager.removeTasks();
-        System.out.println("epics = " + manager.getEpics());
-        System.out.println("tasks = " + manager.getTasks());
-        System.out.println("subtasks = " + manager.getSubTasks());
-
+    private static AbstractTask createRandomTask(String title, String description) {
+        TaskManager manager = Managers.getDefaultTaskManager();
+        int seed = (int) (Math.random() * 30);
+        AbstractTask task;
+        if (seed < 10) {
+            task = new Task(title, description);
+        } else if (seed < 20) {
+            task = new SubTask(title, description);
+            ((SubTask) task).setEpic(getRandomEpic());
+        } else {
+            task = new Epic(title, description);
+        }
+        task.add();
+        manager.createTask(task);
+        return task;
     }
 }

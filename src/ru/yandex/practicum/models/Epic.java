@@ -27,15 +27,17 @@ final public class Epic extends AbstractTask {
 
     public void evaluateStatus() {
         boolean allTasksIsDone = true;
+        boolean allTasksIsNew = true;
         for (SubTask task : subTasks.values()) {
-            if (task.status == TaskStatus.IN_PROGRESS) {
-                this.status = TaskStatus.IN_PROGRESS;
-                return;
-            }
             allTasksIsDone = allTasksIsDone && (task.status == TaskStatus.DONE);
+            allTasksIsNew = allTasksIsNew && (task.status == TaskStatus.NEW);
         }
         if (allTasksIsDone) {
             this.status = TaskStatus.DONE;
+        } else if(allTasksIsNew) {
+            this.status = TaskStatus.NEW;
+        } else {
+            this.status = TaskStatus.IN_PROGRESS;
         }
     }
 

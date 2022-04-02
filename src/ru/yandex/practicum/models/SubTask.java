@@ -3,9 +3,6 @@ package ru.yandex.practicum.models;
 final public class SubTask extends AbstractTask {
     private Epic epic;
 
-    public SubTask() {
-    }
-
     public SubTask(String name, String description) {
         super(name, description);
     }
@@ -38,7 +35,6 @@ final public class SubTask extends AbstractTask {
     public AbstractTask update() {
         super.update();
         epic.addSubtask(this);
-        epic.evaluateStatus();
         return this;
     }
 
