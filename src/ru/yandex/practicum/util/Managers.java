@@ -4,7 +4,7 @@ import ru.yandex.practicum.managers.*;
 
 final public class Managers {
     private final static InMemoryTaskStore inMemoryTaskStoreInstance = new InMemoryTaskStore();
-    private final static InMemoryTaskHistory inMemoryTaskHistory = new InMemoryTaskHistory();
+    private final static InMemoryTaskHistoryManager inMemoryTaskHistory = new InMemoryTaskHistoryManager();
     private final static TaskManager defaultTaskManagerInstance = new InMemoryTaskManager();
     private final static TaskHistoryManager defaultTaskHistory = inMemoryTaskHistory;
     private final static TaskStore defaultTaskStoreInstance = inMemoryTaskStoreInstance;
@@ -26,7 +26,7 @@ final public class Managers {
         return inMemoryTaskStoreInstance;
     }
 
-    public static InMemoryTaskHistory getInMemoryTaskHistory() {
+    public static InMemoryTaskHistoryManager getInMemoryTaskHistory() {
         return inMemoryTaskHistory;
     }
 }

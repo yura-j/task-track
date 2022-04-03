@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 final public class InMemoryTaskManager implements TaskManager {
 
     private final InMemoryTaskStore store = Managers.getInMemoryStore();
-    private final InMemoryTaskHistory history = Managers.getInMemoryTaskHistory();
+    private final InMemoryTaskHistoryManager history = Managers.getInMemoryTaskHistory();
 
 
     public ArrayList<AbstractTask> getAllTasks() {
