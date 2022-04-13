@@ -2,6 +2,7 @@ package ru.yandex.practicum.models;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 final public class Epic extends AbstractTask {
     private final HashMap<Integer, SubTask> subTasks;
@@ -51,12 +52,11 @@ final public class Epic extends AbstractTask {
         this.evaluateStatus();
     }
 
-    public Epic remove() {
-        for (SubTask task : subTasks.values()) {
-            store.removeTask(task.id);
-        }
+    public List<AbstractTask> remove() {
+        List<AbstractTask> subtaskForRemove = new ArrayList<>();
+        subtaskForRemove.addAll(subTasks.values());
         store.removeTask(this.id);
-        return this;
+        return subtaskForRemove;
     }
 
     @Override

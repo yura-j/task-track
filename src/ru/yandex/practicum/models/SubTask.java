@@ -1,5 +1,7 @@
 package ru.yandex.practicum.models;
 
+import java.util.List;
+
 final public class SubTask extends AbstractTask {
     private Epic epic;
 
@@ -40,10 +42,10 @@ final public class SubTask extends AbstractTask {
 
 
     @Override
-    public SubTask remove() {
+    public List<AbstractTask> remove() {
         if (this.epic != null) {
             epic.removeSubtask(this);
         }
-        return (SubTask) super.remove();
+        return super.remove();
     }
 }

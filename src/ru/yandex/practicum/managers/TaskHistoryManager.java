@@ -8,5 +8,7 @@ public interface TaskHistoryManager {
 
     List<AbstractTask> getHistory();
 
-    void update(AbstractTask task);
+    void add(AbstractTask task);
+
+    void remove(int id);
 }

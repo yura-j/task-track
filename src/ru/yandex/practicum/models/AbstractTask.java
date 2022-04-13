@@ -4,6 +4,7 @@ import ru.yandex.practicum.managers.TaskStore;
 import ru.yandex.practicum.util.Managers;
 
 import java.util.ArrayList;
+import java.util.List;
 
 abstract public class AbstractTask {
     protected int id = 0;
@@ -58,9 +59,9 @@ abstract public class AbstractTask {
         return this;
     }
 
-    public AbstractTask remove() {
+    public List<AbstractTask> remove() {
         store.removeTask(this.id);
-        return this;
+        return new ArrayList<>();
     }
 
     @Override

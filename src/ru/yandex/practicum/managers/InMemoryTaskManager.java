@@ -84,7 +84,7 @@ final public class InMemoryTaskManager implements TaskManager {
      */
     public AbstractTask getTask(Integer id) {
         AbstractTask observableTask = store.getTask(id);
-        history.update(observableTask);
+        history.add(observableTask);
         return observableTask;
     }
 
@@ -112,7 +112,12 @@ final public class InMemoryTaskManager implements TaskManager {
      * @param taskId
      */
     public void removeTask(int taskId) {
-        store.getTask(taskId).remove();
+        history.remove(taskId);
+        List<AbstractTask> linkedTasks = store.getTask(taskId).remove();
+        linkedTasks
+                .stream()
+                .map(AbstractTask::getId)
+                .forEach(this::removeTask);
     }
 
     public List<AbstractTask> history() {
