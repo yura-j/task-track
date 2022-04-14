@@ -12,16 +12,12 @@ final public class InMemoryTaskManager implements TaskManager {
     private final InMemoryTaskStore store = Managers.getInMemoryStore();
     private final InMemoryTaskHistoryManager history = Managers.getInMemoryTaskHistory();
 
-
+    @Override
     public ArrayList<AbstractTask> getAllTasks() {
         return store.getTasks();
     }
 
-    /**
-     * Взять все задачи
-     *
-     * @return
-     */
+    @Override
     public ArrayList<Task> getTasks() {
         return store
                 .getTasks()
@@ -31,11 +27,7 @@ final public class InMemoryTaskManager implements TaskManager {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    /**
-     * Взять все подзадачи
-     *
-     * @return
-     */
+    @Override
     public ArrayList<SubTask> getSubTasks() {
         return store
                 .getTasks()
@@ -45,21 +37,12 @@ final public class InMemoryTaskManager implements TaskManager {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    /**
-     * Взять все подзадачи эпика
-     *
-     * @param epic
-     * @return
-     */
+    @Override
     public ArrayList<SubTask> getEpicSubTasks(Epic epic) {
         return epic.getSubTasks();
     }
 
-    /**
-     * Взять все эпики
-     *
-     * @return
-     */
+    @Override
     public ArrayList<Epic> getEpics() {
         return store
                 .getTasks()
@@ -69,48 +52,29 @@ final public class InMemoryTaskManager implements TaskManager {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    /**
-     * Удалить задачи
-     */
+    @Override
     public void removeTasks() {
         store.removeTasks();
     }
 
-    /**
-     * Взять задачу по идентификатору
-     *
-     * @param id
-     * @return
-     */
+    @Override
     public AbstractTask getTask(Integer id) {
         AbstractTask observableTask = store.getTask(id);
         history.add(observableTask);
         return observableTask;
     }
 
-    /**
-     * Создать задачу
-     *
-     * @param task
-     */
+    @Override
     public void createTask(AbstractTask task) {
         task.add();
     }
 
-    /**
-     * Обновить задачу
-     *
-     * @param task
-     */
+    @Override
     public void updateTask(AbstractTask task) {
         task.update();
     }
-
-    /**
-     * Удалить задачу
-     *
-     * @param taskId
-     */
+    
+    @Override
     public void removeTask(int taskId) {
         history.remove(taskId);
         List<AbstractTask> linkedTasks = store.getTask(taskId).remove();
@@ -120,6 +84,7 @@ final public class InMemoryTaskManager implements TaskManager {
                 .forEach(this::removeTask);
     }
 
+    @Override
     public List<AbstractTask> history() {
         return history.getHistory();
     }
