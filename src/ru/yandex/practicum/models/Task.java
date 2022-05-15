@@ -1,9 +1,14 @@
 package ru.yandex.practicum.models;
 
-import ru.yandex.practicum.models.AbstractTask;
-
 final public class Task extends AbstractTask {
+
     public Task(String name, String description) {
         super(name, description);
+        type = TaskType.TASK;
+    }
+
+    public Task(CompressedTaskDto dto) {
+        super(dto);
+        type = TaskType.TASK;
     }
 }

@@ -11,15 +11,39 @@ abstract public class AbstractTask {
     protected String name = "";
     protected String description = "";
     protected TaskStatus status = TaskStatus.NEW;
+    public TaskType type;
     protected TaskStore store = Managers.getDefaultStore();
+
 
     public AbstractTask() {
 
     }
 
+    protected Integer getEpicId() {
+        return 0;
+    }
+
     public AbstractTask(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    public AbstractTask(CompressedTaskDto dto) {
+        this.id = dto.id;
+        this.name = dto.name;
+        this.description = dto.description;
+        this.status = dto.status;
+    }
+
+    public CompressedTaskDto toCompressedTaskDto() {
+        CompressedTaskDto dto = new CompressedTaskDto();
+        dto.id = this.id;
+        dto.name = this.name;
+        dto.description = this.description;
+        dto.status = this.status;
+        dto.type = this.type;
+        dto.epicId = this.getEpicId();
+        return dto;
     }
 
     public void replicateMeTo(AbstractTask task) {
@@ -28,16 +52,6 @@ abstract public class AbstractTask {
         task.description = description;
         task.status = status;
         task.store = store;
-    }
-
-    protected ArrayList<AbstractTask> filterTypedElements() {
-        ArrayList<AbstractTask> list = new ArrayList<>();
-        for (AbstractTask task : store.getTasks()) {
-            if (task.getClass() == this.getClass()) {
-                list.add(task);
-            }
-        }
-        return list;
     }
 
     public void setStatus(TaskStatus status) {
@@ -68,4 +82,5 @@ abstract public class AbstractTask {
     public String toString() {
         return this.getClass().getSimpleName() + "@" + id + "@" + status;
     }
+
 }

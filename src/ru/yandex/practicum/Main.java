@@ -9,7 +9,20 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        testDeleteHistory();
+        testFileBacking();
+        //testDeleteHistory();
+    }
+
+
+    public static void testFileBacking() {
+        TaskManager manager = Managers.getDefaultTaskManager();
+        manager.getAllTasks().forEach(System.out::println);
+        System.out.println("Добавим 2 задачки");
+        Task task0 = new Task("2", "4");
+        Task task1 = new Task("3", "5");
+        manager.createTask(task0);
+        manager.createTask(task1);
+        manager.getAllTasks().forEach(System.out::println);
     }
 
 

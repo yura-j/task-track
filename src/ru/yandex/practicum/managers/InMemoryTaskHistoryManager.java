@@ -62,11 +62,11 @@ public class InMemoryTaskHistoryManager implements TaskHistoryManager {
     }
 
     private void removeNode(Node<AbstractTask> node) {
-        Node<AbstractTask> previous, next;
-        previous = node.getPrevious();
-        next = node.getNext();
+        Node<AbstractTask> previous = node.getPrevious();
+        Node<AbstractTask> next = node.getNext();
         boolean nodeIsFirst = previous == null;
         boolean nodeIsLast = next == null;
+
         if (nodeIsFirst) {
             head = next;
             if (next != null) {

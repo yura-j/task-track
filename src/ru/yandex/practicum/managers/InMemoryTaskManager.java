@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-final public class InMemoryTaskManager implements TaskManager {
+public class InMemoryTaskManager implements TaskManager {
 
-    private final InMemoryTaskStore store = Managers.getInMemoryStore();
-    private final InMemoryTaskHistoryManager history = Managers.getInMemoryTaskHistory();
+    protected TaskStore store = Managers.getInMemoryStore();
+    protected TaskHistoryManager history = Managers.getInMemoryTaskHistory();
 
     @Override
     public ArrayList<AbstractTask> getAllTasks() {
@@ -73,7 +73,7 @@ final public class InMemoryTaskManager implements TaskManager {
     public void updateTask(AbstractTask task) {
         task.update();
     }
-    
+
     @Override
     public void removeTask(int taskId) {
         history.remove(taskId);

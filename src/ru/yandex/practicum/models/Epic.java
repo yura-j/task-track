@@ -5,12 +5,18 @@ import java.util.HashMap;
 import java.util.List;
 
 final public class Epic extends AbstractTask {
-    private final HashMap<Integer, SubTask> subTasks;
+    private final HashMap<Integer, SubTask> subTasks = new HashMap<>();
 
     public Epic(String name, String description) {
         super(name, description);
-        subTasks = new HashMap<>();
+        type = TaskType.EPIC;
     }
+
+    public Epic(CompressedTaskDto dto) {
+        super(dto);
+        type = TaskType.EPIC;
+    }
+
 
     @Override
     public void setStatus(TaskStatus status) {
@@ -35,7 +41,7 @@ final public class Epic extends AbstractTask {
         }
         if (allTasksIsDone) {
             this.status = TaskStatus.DONE;
-        } else if(allTasksIsNew) {
+        } else if (allTasksIsNew) {
             this.status = TaskStatus.NEW;
         } else {
             this.status = TaskStatus.IN_PROGRESS;
