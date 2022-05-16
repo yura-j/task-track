@@ -16,15 +16,15 @@ public class CompressedTaskDto implements Compressible {
     public String description;
     public int epicId;
 
-    public CompressedTaskDto() {
-    }
-
     public void setCompressionMap(Map<String, Integer> compressionMap) {
         this.compressionMap = compressionMap;
     }
 
     protected Map<String, Integer> compressionMap = null;
 
+    public String exportEpicIdToString() {
+        return this.epicId == 0 ? "" : String.valueOf(epicId);
+    }
     /**
      * id,type,name,status,description,epic
      *
@@ -32,7 +32,7 @@ public class CompressedTaskDto implements Compressible {
      */
     @Override
     public String compress() {
-        List<String> fields = Stream.of(id, type.toString(), name, status, description, epicId)
+        List<String> fields = Stream.of(id, type.toString(), name, status, description, exportEpicIdToString())
                 .map(String::valueOf)
                 .collect(Collectors.toList());
         return String.join(",", fields);
@@ -58,6 +58,11 @@ public class CompressedTaskDto implements Compressible {
             this.status = TaskStatus.valueOf(fields[statusIndex]);
             this.description = fields[descriptionIndex].trim();
             this.epicId = 0;
+            //Ошибки не будет, нули проставлять не прийдется, так как если строка пустая, то 60 строчка приведет epicId
+            //в нуль, если не пустая то 67 строчка попробует проставить в epicId число. Тем не менее, я согласен, что
+            //формат файла нужно соблюсти в точности. Поэтому я поправил сохранение в файл, теперь оно преобразует
+            //epicId если он нуль и отправит на сохранение пустую строку. Формат пределал не спецом,
+            //сначал не хотел на это отвлекаться, потом забыл поправить. Спасибо что обратиливнимание.
             if (!fields[epicIndex].isEmpty()) {
                 this.epicId = Integer.parseInt(fields[epicIndex]);
             }

@@ -25,7 +25,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements Observ
             writer.write("\n\n");
             writer.write(this.getHistory().compress());
         } catch (IOException e) {
-            throw new ManagerSaveException();
+            throw new ManagerSaveException("Ошибка сохранения");
         }
     }
 
@@ -48,7 +48,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements Observ
         try {
             lines = Files.readAllLines(file);
         } catch (IOException e) {
-            throw new ManagerLoadException();
+            throw new ManagerLoadException("Ошибка загрузки файла");
         }
         StringBuilder taskDataBuilder = new StringBuilder("");
         String historyData = "";
