@@ -27,12 +27,22 @@ public class InMemoryTaskHistoryManager implements TaskHistoryManager {
             removeNode(nodeMap.get(id));
             nodeMap.remove(id);
         }
+        if (nodeMap.size() == 0) {
+            head = null;
+            tail = null;
+        }
     }
 
     private void linkLast(AbstractTask task) {
+        if (nodeMap.containsKey(task.getId())) {
+            Node<AbstractTask> oldNode = nodeMap.get(task.getId());
+            removeNode(oldNode);
+        }
+
         boolean firstInsert = head == null;
         boolean secondInsert = tail == null && !firstInsert;
         Node<AbstractTask> taskNode = new Node<>(task, null, null);
+
         if (firstInsert) {
             head = taskNode;
         } else if (secondInsert) {
@@ -40,10 +50,6 @@ public class InMemoryTaskHistoryManager implements TaskHistoryManager {
             head.setNext(tail);
             tail.setPrevious(head);
         } else {
-            if (nodeMap.containsKey(task.getId())) {
-                Node<AbstractTask> oldNode = nodeMap.get(task.getId());
-                removeNode(oldNode);
-            }
             taskNode.setPrevious(tail);
             tail.setNext(taskNode);
             tail = taskNode;

@@ -1,17 +1,24 @@
 package ru.yandex.practicum.models;
 
+import ru.yandex.practicum.exceptions.TimeTableBusyException;
 import ru.yandex.practicum.managers.TaskStore;
+import ru.yandex.practicum.managers.TimeTable;
 import ru.yandex.practicum.util.Managers;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-abstract public class AbstractTask {
+abstract public class AbstractTask implements Comparable<AbstractTask>{
     protected int id = 0;
     protected String name = "";
     protected String description = "";
     protected TaskStatus status = TaskStatus.NEW;
-    public TaskType type;
+    protected TaskType type;
+    protected int duration = 0;
+    protected LocalDateTime startTime;
+
     protected TaskStore store = Managers.getDefaultStore();
 
 
@@ -33,7 +40,11 @@ abstract public class AbstractTask {
         this.name = dto.name;
         this.description = dto.description;
         this.status = dto.status;
+        this.duration = dto.duration;
+        this.startTime = dto.startTime;
     }
+
+
 
     public CompressedTaskDto toCompressedTaskDto() {
         CompressedTaskDto dto = new CompressedTaskDto();
@@ -43,15 +54,24 @@ abstract public class AbstractTask {
         dto.status = this.status;
         dto.type = this.type;
         dto.epicId = this.getEpicId();
+        dto.startTime = this.extractStartTime();
+        dto.duration = this.extractDuration();
         return dto;
     }
 
-    public void replicateMeTo(AbstractTask task) {
-        task.id = id;
-        task.name = name;
-        task.description = description;
-        task.status = status;
-        task.store = store;
+    protected LocalDateTime extractStartTime() {
+        return startTime;
+    }
+
+    protected int extractDuration() {
+        return duration;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime != null) {
+            return startTime.plusMinutes(duration);
+        }
+        return null;
     }
 
     public void setStatus(TaskStatus status) {
@@ -60,6 +80,20 @@ abstract public class AbstractTask {
 
     public int getId() {
         return id;
+    }
+
+    public void addToTimeTable(TimeTable table) {
+        if (startTime == null){
+            return;
+        }
+        if (!table.isIntervalFreeInTable(startTime, duration)) {
+            throw new TimeTableBusyException("Задача " + this + " пересекается по времени выполнения с другими задачами");
+        }
+        table.holdInterval(startTime, duration);
+    }
+
+    public void removeFromTimeTable(TimeTable table) {
+        table.freeInterval(startTime, duration);
     }
 
     public AbstractTask add() {
@@ -83,4 +117,43 @@ abstract public class AbstractTask {
         return this.getClass().getSimpleName() + "@" + id + "@" + status;
     }
 
+    public int getDuration() {
+        return duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    @Override
+    public int compareTo(AbstractTask comparingTask) {
+        if (startTime == null) {
+            return +1;
+        }
+        if (comparingTask.startTime == null) {
+            return -1;
+        }
+        return comparingTask.startTime.compareTo(startTime);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractTask that = (AbstractTask) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public TaskStatus getStatus() {
+        return status;
+    }
 }

@@ -15,7 +15,7 @@ import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager implements Observer {
     Path file;
-    static final String TASK_HEADING_LINE = "id,type,name,status,description,epic";
+    static final String TASK_HEADING_LINE = "id,type,name,status,description,epic,start_time,duration";
 
     public void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file.toFile()))) {

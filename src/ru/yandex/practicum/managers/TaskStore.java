@@ -3,9 +3,12 @@ package ru.yandex.practicum.managers;
 import ru.yandex.practicum.models.AbstractTask;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 public interface TaskStore {
     ArrayList<AbstractTask> getTasks();
+
+    Set<AbstractTask> getPrioritizedTasks();
 
     AbstractTask getTask(Integer id);
 
@@ -16,4 +19,5 @@ public interface TaskStore {
     void removeTasks();
 
     int generateNewId();
+
 }

@@ -21,6 +21,9 @@ public class FileBackedTaskHistoryManager extends InMemoryTaskHistoryManager imp
 
     @Override
     public void decompress(String compressedData) {
+        if (compressedData.isBlank()){
+            return;
+        }
         Arrays.stream(compressedData.split(","))
                 .map(Integer::parseInt)
                 .map(store::getTask)

@@ -5,12 +5,18 @@ import ru.yandex.practicum.util.Managers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
 
     protected TaskStore store = Managers.getInMemoryStore();
     protected TaskHistoryManager history = Managers.getInMemoryTaskHistory();
+
+    @Override
+    public Set<AbstractTask> getPrioritizedTasks() {
+        return store.getPrioritizedTasks();
+    }
 
     @Override
     public ArrayList<AbstractTask> getAllTasks() {
@@ -55,12 +61,19 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeTasks() {
         store.removeTasks();
+        history
+            .getHistory()
+            .stream()
+            .mapToInt(AbstractTask::getId)
+            .forEach(history::remove);
     }
 
     @Override
     public AbstractTask getTask(Integer id) {
         AbstractTask observableTask = store.getTask(id);
-        history.add(observableTask);
+        if (observableTask !=  null) {
+            history.add(observableTask);
+        }
         return observableTask;
     }
 
@@ -76,12 +89,15 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeTask(int taskId) {
-        history.remove(taskId);
-        List<AbstractTask> linkedTasks = store.getTask(taskId).remove();
-        linkedTasks
-                .stream()
-                .map(AbstractTask::getId)
-                .forEach(this::removeTask);
+        AbstractTask task = store.getTask(taskId);
+        if (task != null) {
+            history.remove(taskId);
+            List<AbstractTask> linkedTasks = task.remove();
+            linkedTasks
+                    .stream()
+                    .map(AbstractTask::getId)
+                    .forEach(this::removeTask);
+        }
     }
 
     @Override

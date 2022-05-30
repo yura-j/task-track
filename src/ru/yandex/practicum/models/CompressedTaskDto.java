@@ -3,6 +3,7 @@ package ru.yandex.practicum.models;
 import ru.yandex.practicum.exceptions.ParsingException;
 import ru.yandex.practicum.util.Compressible;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,6 +16,8 @@ public class CompressedTaskDto implements Compressible {
     public TaskStatus status;
     public String description;
     public int epicId;
+    public LocalDateTime startTime;
+    public int duration;
 
     public void setCompressionMap(Map<String, Integer> compressionMap) {
         this.compressionMap = compressionMap;
@@ -25,6 +28,12 @@ public class CompressedTaskDto implements Compressible {
     public String exportEpicIdToString() {
         return this.epicId == 0 ? "" : String.valueOf(epicId);
     }
+    public String exportStartTimeToString() {
+        return this.startTime == null ? "" : String.valueOf(startTime);
+    }
+    public String exportDurationToString() {
+        return this.duration == 0 ? "" : String.valueOf(duration);
+    }
     /**
      * id,type,name,status,description,epic
      *
@@ -32,7 +41,15 @@ public class CompressedTaskDto implements Compressible {
      */
     @Override
     public String compress() {
-        List<String> fields = Stream.of(id, type.toString(), name, status, description, exportEpicIdToString())
+        List<String> fields = Stream.of(
+                        id,
+                        type.toString(),
+                        name,
+                        status,
+                        description,
+                        exportEpicIdToString(),
+                        exportStartTimeToString(),
+                        exportDurationToString())
                 .map(String::valueOf)
                 .collect(Collectors.toList());
         return String.join(",", fields);
@@ -51,6 +68,8 @@ public class CompressedTaskDto implements Compressible {
             int statusIndex = this.compressionMap.get("status");
             int descriptionIndex = this.compressionMap.get("description");
             int epicIndex = this.compressionMap.get("epic");
+            int startTimeIndex = this.compressionMap.get("start_time");
+            int durationIndex = this.compressionMap.get("duration");
 
             this.id = Integer.parseInt(fields[idIndex]);
             this.type = TaskType.valueOf(fields[typeIndex]);
@@ -58,13 +77,15 @@ public class CompressedTaskDto implements Compressible {
             this.status = TaskStatus.valueOf(fields[statusIndex]);
             this.description = fields[descriptionIndex].trim();
             this.epicId = 0;
-            //Ошибки не будет, нули проставлять не прийдется, так как если строка пустая, то 60 строчка приведет epicId
-            //в нуль, если не пустая то 67 строчка попробует проставить в epicId число. Тем не менее, я согласен, что
-            //формат файла нужно соблюсти в точности. Поэтому я поправил сохранение в файл, теперь оно преобразует
-            //epicId если он нуль и отправит на сохранение пустую строку. Формат пределал не спецом,
-            //сначал не хотел на это отвлекаться, потом забыл поправить. Спасибо что обратили внимание.
             if (!fields[epicIndex].isEmpty()) {
                 this.epicId = Integer.parseInt(fields[epicIndex]);
+            }
+            if (!fields[startTimeIndex].isEmpty()){
+                this.startTime = LocalDateTime.parse(fields[startTimeIndex]);
+            }
+            this.duration = 0;
+            if (!fields[durationIndex].isEmpty()){
+                this.duration = Integer.parseInt(fields[durationIndex]);
             }
 
         } catch (Exception e) {

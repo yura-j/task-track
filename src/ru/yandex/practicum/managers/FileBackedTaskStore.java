@@ -40,6 +40,10 @@ public class FileBackedTaskStore extends InMemoryTaskStore implements Compressib
             compressionMap.put(fields[i], i);
         }
         compressedData = compressedData.substring(compressedData.indexOf("\n") + 1);
+        if (compressedData.isBlank()) {
+            this.maxId = 0;
+            return;
+        }
         List<CompressedTaskDto> taskDtoList = Stream.of(compressedData.split("\n"))
                 .map(stringDto -> {
                     CompressedTaskDto dto = new CompressedTaskDto();

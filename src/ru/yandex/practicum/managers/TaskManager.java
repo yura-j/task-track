@@ -7,19 +7,23 @@ import ru.yandex.practicum.models.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public interface TaskManager {
+
+    /**
+     * Возвращает список всех задач, отсортированных по startTime, по возрастанию
+     * startTime =null в конце списка
+     */
+    Set<AbstractTask> getPrioritizedTasks();
+
     /**
      * Взять все задачи,епики и подзадачи
-     *
-     * @return
      */
     ArrayList<AbstractTask> getAllTasks();
 
     /**
      * Взять все задачи
-     *
-     * @return
      */
     ArrayList<Task> getTasks();
 
@@ -80,4 +84,5 @@ public interface TaskManager {
     void removeTask(int taskId);
 
     List<AbstractTask> history();
+
 }

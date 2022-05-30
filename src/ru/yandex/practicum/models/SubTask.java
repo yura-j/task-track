@@ -12,7 +12,7 @@ final public class SubTask extends AbstractTask {
 
     @Override
     protected Integer getEpicId() {
-        return (epic == null) ? null : epic.id;
+        return (epic == null) ? 0 : epic.id;
     }
 
     public SubTask(String name, String description) {

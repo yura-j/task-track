@@ -1,6 +1,6 @@
-id,type,name,status,description,epic
-1,TASK,Task1,NEW,Description task1,
-2,EPIC,Epic2,DONE,Description epic2,
-3,SUBTASK,Sub Task2,DONE,Description sub task3,2
+id,type,name,status,description,epic,start_time,duration
+1,TASK,Task1,NEW,Description task1,,2022-05-08T11:47:00,15
+2,EPIC,Epic2,DONE,Description epic2,,,
+3,SUBTASK,Sub Task2,DONE,Description sub task3,2,2022-05-08T11:48:00,15
 
 2,3
