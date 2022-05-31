@@ -12,7 +12,7 @@ public interface TaskStore {
 
     AbstractTask getTask(Integer id);
 
-    void addTask(AbstractTask task);
+    void putTask(AbstractTask task);
 
     void removeTask(int id);
 

@@ -10,11 +10,6 @@ final public class SubTask extends AbstractTask {
         type = TaskType.SUBTASK;
     }
 
-    @Override
-    protected Integer getEpicId() {
-        return (epic == null) ? 0 : epic.id;
-    }
-
     public SubTask(String name, String description) {
         super(name, description);
         type = TaskType.SUBTASK;
@@ -58,5 +53,10 @@ final public class SubTask extends AbstractTask {
             epic.removeSubtask(this);
         }
         return super.remove();
+    }
+
+    @Override
+    protected Integer getEpicId() {
+        return (epic == null) ? 0 : epic.id;
     }
 }

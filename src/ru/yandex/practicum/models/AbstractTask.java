@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-abstract public class AbstractTask implements Comparable<AbstractTask>{
+abstract public class AbstractTask implements Comparable<AbstractTask> {
+
     protected int id = 0;
     protected String name = "";
     protected String description = "";
@@ -21,20 +22,12 @@ abstract public class AbstractTask implements Comparable<AbstractTask>{
 
     protected TaskStore store = Managers.getDefaultStore();
 
-
-    public AbstractTask() {
-
-    }
-
-    protected Integer getEpicId() {
-        return 0;
-    }
-
     public AbstractTask(String name, String description) {
         this.name = name;
         this.description = description;
     }
 
+    //Сериализация
     public AbstractTask(CompressedTaskDto dto) {
         this.id = dto.id;
         this.name = dto.name;
@@ -43,8 +36,6 @@ abstract public class AbstractTask implements Comparable<AbstractTask>{
         this.duration = dto.duration;
         this.startTime = dto.startTime;
     }
-
-
 
     public CompressedTaskDto toCompressedTaskDto() {
         CompressedTaskDto dto = new CompressedTaskDto();
@@ -58,15 +49,17 @@ abstract public class AbstractTask implements Comparable<AbstractTask>{
         dto.duration = this.extractDuration();
         return dto;
     }
-
+    protected Integer getEpicId() {
+        return 0;
+    }
     protected LocalDateTime extractStartTime() {
         return startTime;
     }
-
     protected int extractDuration() {
         return duration;
     }
 
+    //Методы поддерджки расписания
     public LocalDateTime getEndTime() {
         if (startTime != null) {
             return startTime.plusMinutes(duration);
@@ -74,16 +67,8 @@ abstract public class AbstractTask implements Comparable<AbstractTask>{
         return null;
     }
 
-    public void setStatus(TaskStatus status) {
-        this.status = status;
-    }
-
-    public int getId() {
-        return id;
-    }
-
     public void addToTimeTable(TimeTable table) {
-        if (startTime == null){
+        if (startTime == null) {
             return;
         }
         if (!table.isIntervalFreeInTable(startTime, duration)) {
@@ -96,14 +81,16 @@ abstract public class AbstractTask implements Comparable<AbstractTask>{
         table.freeInterval(startTime, duration);
     }
 
+
+    //Круд операции
     public AbstractTask add() {
         this.id = store.generateNewId();
-        this.store.addTask(this);
+        this.store.putTask(this);
         return this;
     }
 
     public AbstractTask update() {
-        store.addTask(this);
+        store.putTask(this);
         return this;
     }
 
@@ -112,9 +99,21 @@ abstract public class AbstractTask implements Comparable<AbstractTask>{
         return new ArrayList<>();
     }
 
-    @Override
-    public String toString() {
-        return this.getClass().getSimpleName() + "@" + id + "@" + status;
+    //Геттеры, Сеттеры
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public TaskStatus getStatus() {
+        return status;
     }
 
     public int getDuration() {
@@ -123,6 +122,13 @@ abstract public class AbstractTask implements Comparable<AbstractTask>{
 
     public LocalDateTime getStartTime() {
         return startTime;
+    }
+
+
+    //Методы стандартной библиотеки
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "@" + id + "@" + status;
     }
 
     @Override
@@ -147,13 +153,5 @@ abstract public class AbstractTask implements Comparable<AbstractTask>{
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public TaskStatus getStatus() {
-        return status;
     }
 }

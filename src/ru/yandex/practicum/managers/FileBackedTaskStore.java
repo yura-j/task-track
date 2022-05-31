@@ -94,8 +94,8 @@ public class FileBackedTaskStore extends InMemoryTaskStore implements Compressib
     }
 
     @Override
-    public void addTask(AbstractTask task) {
-        super.addTask(task);
+    public void putTask(AbstractTask task) {
+        super.putTask(task);
         notifyObservers();
     }
 

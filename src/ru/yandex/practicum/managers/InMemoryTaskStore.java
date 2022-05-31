@@ -29,11 +29,11 @@ public class InMemoryTaskStore implements TaskStore {
 
 
     @Override
-    public void addTask(AbstractTask task) {
+    public void putTask(AbstractTask task) {
         try {
             task.addToTimeTable(schedule);
         } catch (TimeTableBusyException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
             return;
         }
         taskList.put(task.getId(), task);

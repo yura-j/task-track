@@ -17,6 +17,7 @@ final public class Epic extends AbstractTask {
         type = TaskType.EPIC;
     }
 
+    //Сериализация
     public Epic(CompressedTaskDto dto) {
         super(dto);
         this.startTime = null;
@@ -34,11 +35,7 @@ final public class Epic extends AbstractTask {
         return 0;
     }
 
-    @Override
-    public void setStatus(TaskStatus status) {
-        System.out.println("Аяяй. Низзя менять статус эпика, он компьютед");
-    }
-
+    //Методы поддерджки расписания
     @Override
     public void addToTimeTable(TimeTable table) {
     }
@@ -48,14 +45,33 @@ final public class Epic extends AbstractTask {
     }
 
     @Override
-    public Epic update() {
-        Epic storedEpic = (Epic) store.getTask(this.id);
-        storedEpic.getSubTasks().forEach(SubTask::remove);
-        this.getSubTasks().forEach(SubTask::add);
-        super.update();
-        return this;
+    public LocalDateTime getEndTime() {
+        return subTasks
+                .values()
+                .stream()
+                .map(SubTask::getEndTime)
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
     }
 
+    public void computeDuration() {
+        this.duration = subTasks
+                .values()
+                .stream()
+                .mapToInt(SubTask::getDuration)
+                .sum();
+    }
+
+    public void computeStartTime() {
+        this.startTime = subTasks
+                .values()
+                .stream()
+                .map(SubTask::getStartTime)
+                .min(LocalDateTime::compareTo)
+                .orElse(null);
+    }
+
+    //Хуки
     public void evaluateStatus() {
         boolean allTasksIsDone = true;
         boolean allTasksIsNew = true;
@@ -78,21 +94,9 @@ final public class Epic extends AbstractTask {
         computeStartTime();
     }
 
-    public void computeDuration() {
-        this.duration = subTasks
-                .values()
-                .stream()
-                .mapToInt(SubTask::getDuration)
-                .sum();
-    }
-
-    public void computeStartTime() {
-        this.startTime = subTasks
-                .values()
-                .stream()
-                .map(SubTask::getStartTime)
-                .min(LocalDateTime::compareTo)
-                .orElse(null);
+    //Управление сабтасками
+    public ArrayList<SubTask> getSubTasks() {
+        return new ArrayList<>(subTasks.values());
     }
 
     public void addSubtask(SubTask task) {
@@ -105,18 +109,25 @@ final public class Epic extends AbstractTask {
         computeSubTasksBasedFields();
     }
 
+    //Круд
+    @Override
+    public Epic update() {
+        Epic storedEpic = (Epic) store.getTask(this.id);
+        storedEpic.getSubTasks().forEach(SubTask::remove);
+        this.getSubTasks().forEach(SubTask::add);
+        super.update();
+        return this;
+    }
+
     public List<AbstractTask> remove() {
         List<AbstractTask> subtaskForRemove = new ArrayList<>(subTasks.values());
         store.removeTask(this.id);
         return subtaskForRemove;
     }
 
+    //Методы стандартной библиотеки
     @Override
     public String toString() {
         return super.toString() + subTasks;
-    }
-
-    public ArrayList<SubTask> getSubTasks() {
-        return new ArrayList<>(subTasks.values());
     }
 }
