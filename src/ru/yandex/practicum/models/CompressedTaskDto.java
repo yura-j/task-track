@@ -9,15 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CompressedTaskDto implements Compressible {
-    public int id;
-    public TaskType type;
-    public String name;
-    public TaskStatus status;
-    public String description;
-    public int epicId;
-    public LocalDateTime startTime;
-    public int duration;
+public class CompressedTaskDto extends TaskDto implements Compressible {
 
     public void setCompressionMap(Map<String, Integer> compressionMap) {
         this.compressionMap = compressionMap;
@@ -25,20 +17,6 @@ public class CompressedTaskDto implements Compressible {
 
     protected Map<String, Integer> compressionMap = null;
 
-    public String exportEpicIdToString() {
-        return this.epicId == 0 ? "" : String.valueOf(epicId);
-    }
-    public String exportStartTimeToString() {
-        return this.startTime == null ? "" : String.valueOf(startTime);
-    }
-    public String exportDurationToString() {
-        return this.duration == 0 ? "" : String.valueOf(duration);
-    }
-    /**
-     * id,type,name,status,description,epic
-     *
-     * @return
-     */
     @Override
     public String compress() {
         List<String> fields = Stream.of(
@@ -80,11 +58,11 @@ public class CompressedTaskDto implements Compressible {
             if (!fields[epicIndex].isEmpty()) {
                 this.epicId = Integer.parseInt(fields[epicIndex]);
             }
-            if (!fields[startTimeIndex].isEmpty()){
+            if (!fields[startTimeIndex].isEmpty()) {
                 this.startTime = LocalDateTime.parse(fields[startTimeIndex]);
             }
             this.duration = 0;
-            if (!fields[durationIndex].isEmpty()){
+            if (!fields[durationIndex].isEmpty()) {
                 this.duration = Integer.parseInt(fields[durationIndex]);
             }
 

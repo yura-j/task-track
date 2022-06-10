@@ -2,7 +2,10 @@ package ru.yandex.practicum.managers;
 
 import ru.yandex.practicum.models.TimeTableGridNode;
 
-import java.time.*;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.function.Predicate;
 
 public class TimeTable {
@@ -42,15 +45,15 @@ public class TimeTable {
         while (startNodeIndex >= 0 && i < startNodeIndex + affectedNodesCount) {
             int gridIndex = i++;
             TimeTableGridNode node = getNode(gridIndex);
-            allOperationsSuccess =  allOperationsSuccess && operator.test(node);
+            allOperationsSuccess = allOperationsSuccess && operator.test(node);
         }
         return allOperationsSuccess;
     }
 
     private TimeTableGridNode getNode(int gridIndex) {
         TimeTableGridNode node = grid[gridIndex];
-        if (node == null){
-            node =  new TimeTableGridNode();
+        if (node == null) {
+            node = new TimeTableGridNode();
         }
         return node;
     }

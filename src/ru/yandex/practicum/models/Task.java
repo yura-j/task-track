@@ -7,7 +7,7 @@ final public class Task extends AbstractTask {
         type = TaskType.TASK;
     }
 
-    public Task(CompressedTaskDto dto) {
+    public Task(TaskDto dto) {
         super(dto);
         type = TaskType.TASK;
     }

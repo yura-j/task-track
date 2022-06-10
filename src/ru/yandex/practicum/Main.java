@@ -1,131 +1,36 @@
 package ru.yandex.practicum;
 
-import ru.yandex.practicum.managers.TaskManager;
-import ru.yandex.practicum.models.*;
-import ru.yandex.practicum.util.Managers;
+import ru.yandex.practicum.kv_server.KVServer;
+import ru.yandex.practicum.app.Application;
 
-import java.util.List;
+import java.io.IOException;
+
+
+/*
+* Пояснительная записка.
+* Привет.
+* KVServer имеет захардкоженную булку дебаг, которая включает или отключает метод, который отдает все содержимое KVS
+*       для того чтобы просто из браузера можно было достучаться и посмотреть содержимое данных.
+* Маппинг хранится в файле Routes. Это сделано для того чтобы ослабить зависимость между кодом сервера и маппингом.
+* Логика приема запроса и формирования ответа сконцетрирована в файле AbstractController, его наследники будут
+*       роутить эндпоинты
+* Для некоторых контроллеров написаны юзкейсы, которые хранятся в папке use_cases
+* Для сериализации/десериализации написана обертка над gson, хранится в классе Json, а также сериализатор  и
+*       десериализатор объекта задачи TaskDto.
+* Для того, чтобы не писать новые тесты для тестирования эндпоинтов был написан адаптер RemoteClientTaskManager,
+*       который реализует интерфейс TaskManager. Преимущество подхода в том, что можно сделать
+*       RemoteClientTaskManagerTest и занаследовать базовые тестовые методы от TaskManagerTest, что является неплохим
+*       дополнением для тестирования эндпоинтов.
+* Спасибо за внимание !!!
+*/
+
 
 public class Main {
 
-    public static void main(String[] args) {
-        testFileBacking();
-        //testDeleteHistory();
-    }
-
-
-    public static void testFileBacking() {
-        TaskManager manager = Managers.getDefaultTaskManager();
-        manager.getAllTasks().forEach(System.out::println);
-        System.out.println("Добавим 2 задачки");
-        Task task0 = new Task("2", "4");
-        Task task1 = new Task("3", "5");
-        manager.createTask(task0);
-        manager.createTask(task1);
-        manager.getAllTasks().forEach(System.out::println);
-    }
-
-
-    /**
-     * Тестирование работы программы
-     * После написания менеджера истории проверьте его работу:
-     * создайте две задачи, эпик с тремя подзадачами и эпик без подзадач;
-     * запросите созданные задачи несколько раз в разном порядке;
-     * после каждого запроса выведите историю и убедитесь, что в ней нет повторов;
-     * удалите задачу, которая есть в истории, и проверьте, что при печати она не будет выводиться;
-     * удалите эпик с тремя подзадачами и убедитесь, что из истории удалился как сам эпик, так и все его подзадачи.
-     * Интересного вам программирования!
-     */
-    public static void testDeleteHistory() {
-        TaskManager manager = Managers.getDefaultTaskManager();
-        Task task0 = new Task("", "");
-        Task task1 = new Task("", "");
-        manager.createTask(task0);
-        manager.createTask(task1);
-        Epic epic0task = new Epic("", "");
-        Epic epic3task = new Epic("", "");
-        manager.createTask(epic0task);
-        manager.createTask(epic3task);
-        SubTask task = new SubTask("", "");
-        task.setEpic(epic3task);
-        SubTask task2 = new SubTask("", "");
-        task2.setEpic(epic3task);
-        SubTask task3 = new SubTask("", "");
-        task3.setEpic(epic3task);
-        manager.createTask(task);
-        manager.createTask(task2);
-        manager.createTask(task3);
-
-        System.out.println("Задачи");
-        manager.getAllTasks().forEach(System.out::println);
-
-        manager.getTask(1);
-        manager.getTask(3);
-        manager.getTask(4);
-
-
-        for (int i = 0; i < 10; i++) {
-            AbstractTask randomTask = getRandomTask();
-            System.out.println("Беру задачу " + randomTask);
-            manager.getTask(randomTask.getId());
-        }
-        System.out.println("История");
-        manager.history().forEach(System.out::println);
-
-        manager.removeTask(1);
-        manager.removeTask(4);
-
-        System.out.println("История после удаления");
-        manager.history().forEach(System.out::println);
-
-    }
-
-    public static void testHistory() {
-        TaskManager manager = Managers.getDefaultTaskManager();
-        Epic weNeedAtLeastOneEpic = new Epic("Тестирование спсиков", "Печатаем списки");
-        manager.createTask(weNeedAtLeastOneEpic);
-        System.out.println("weNeedAtLeastOneEpic = " + weNeedAtLeastOneEpic);
-        for (int i = 0; i < 10; i++) {
-            createRandomTask("", "");
-        }
-        System.out.println("Задачи");
-        manager.getAllTasks().forEach(System.out::println);
-
-        for (int i = 0; i < 10; i++) {
-            AbstractTask task = getRandomTask();
-            System.out.println("Беру задачу " + task);
-            manager.getTask(task.getId());
-        }
-        System.out.println("История");
-        manager.history().forEach(System.out::println);
-    }
-
-    private static Epic getRandomEpic() {
-        List<Epic> epics = Managers.getDefaultTaskManager().getEpics();
-        int randomIndex = (int) (Math.random() * epics.size());
-        return epics.get(randomIndex);
-    }
-
-    private static AbstractTask getRandomTask() {
-        List<AbstractTask> tasks = Managers.getDefaultTaskManager().getAllTasks();
-        int randomIndex = (int) (Math.random() * tasks.size());
-        return tasks.get(randomIndex);
-    }
-
-    private static AbstractTask createRandomTask(String title, String description) {
-        TaskManager manager = Managers.getDefaultTaskManager();
-        int seed = (int) (Math.random() * 30);
-        AbstractTask task;
-        if (seed < 10) {
-            task = new Task(title, description);
-        } else if (seed < 20) {
-            task = new SubTask(title, description);
-            ((SubTask) task).setEpic(getRandomEpic());
-        } else {
-            task = new Epic(title, description);
-        }
-        task.add();
-        manager.createTask(task);
-        return task;
+    public static void main(String[] args) throws IOException {
+        KVServer kv = new KVServer();
+        kv.start();
+        Application app = new Application();
+        app.start();
     }
 }

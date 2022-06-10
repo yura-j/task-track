@@ -2,7 +2,7 @@ package ru.yandex.practicum.models;
 
 import ru.yandex.practicum.managers.TimeTable;
 
-import java.time.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +18,7 @@ final public class Epic extends AbstractTask {
     }
 
     //Сериализация
-    public Epic(CompressedTaskDto dto) {
+    public Epic(TaskDto dto) {
         super(dto);
         this.startTime = null;
         this.duration = 0;

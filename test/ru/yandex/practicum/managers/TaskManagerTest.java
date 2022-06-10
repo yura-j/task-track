@@ -18,12 +18,12 @@ import static org.junit.jupiter.api.Assertions.*;
 abstract class TaskManagerTest {
 
     TaskManager manager;
-    CompressedTaskDto sample;
+    TaskDto sample;
 
     @BeforeEach
     void init() {
 
-        sample = new CompressedTaskDto();
+        sample = new TaskDto();
         sample.id = 0;
         sample.name = "";
         sample.description = "";
@@ -41,16 +41,19 @@ abstract class TaskManagerTest {
 
     @Test
     void getPrioritizedTasks() {
+        sample.status=TaskStatus.IN_PROGRESS;
         Task taskOld = new Task(sample);
+
+        sample.status=TaskStatus.NEW;
         sample.startTime = sample.startTime.plusMinutes(15);
         Task taskYoung = new Task(sample);
 
         manager.createTask(taskOld);
         manager.createTask(taskYoung);
+        taskOld = (Task) manager.getTask(1);
+        taskYoung = (Task) manager.getTask(2);
 
         Set<AbstractTask> tasks = manager.getPrioritizedTasks();
-        System.out.println(manager.getAllTasks());
-        System.out.println(tasks);
         Iterator<AbstractTask> iterator = tasks.iterator();
         Task actualTask = (Task) iterator.next();
         assertEquals(taskYoung, actualTask);
@@ -65,6 +68,9 @@ abstract class TaskManagerTest {
 
         manager.createTask(taskOld);
         manager.createTask(taskNull);
+
+        taskOld = (Task) manager.getTask(1);
+        taskNull = (Task) manager.getTask(2);
 
         Set<AbstractTask> tasks = manager.getPrioritizedTasks();
         Iterator<AbstractTask> iterator = tasks.iterator();
@@ -162,6 +168,8 @@ abstract class TaskManagerTest {
     void getEpicSubTasks1subTask() {
         Epic epic = new Epic(sample);
         manager.createTask(epic);
+        epic = (Epic) manager.getTask(1);
+
         SubTask subTask = new SubTask(sample);
         subTask.setEpic(epic);
         manager.createTask(subTask);
@@ -193,7 +201,9 @@ abstract class TaskManagerTest {
     void getTaskIn1OutTask() {
         Task task = new Task(sample);
         manager.createTask(task);
-        assertEquals(task, manager.getTask(task.getId()));
+        sample.id = 1;
+        task = new Task(sample);
+        assertEquals(task, manager.getTask(1));
     }
 
     @Test
@@ -209,7 +219,7 @@ abstract class TaskManagerTest {
         Task task = new Task(sample);
         manager.createTask(task);
         int sizeBeforeDeletion = manager.getAllTasks().size();
-        manager.removeTask(task.getId());
+        manager.removeTask(1);
         assertEquals(1, sizeBeforeDeletion - manager.getAllTasks().size());
     }
 
@@ -224,27 +234,30 @@ abstract class TaskManagerTest {
     void updateTaskFieldChanged() {
         Task task = new Task(sample);
         manager.createTask(task);
-        sample.id = task.getId();
+        sample.id = 1;
         sample.description = "new description";
         Task task2 = new Task(sample);
-        manager.createTask(task2);
-       assertEquals("new description", task2.getDescription());
+        manager.updateTask(task2);
+        AbstractTask taskFromStore = manager.getTask(1);
+        assertEquals("new description", taskFromStore.getDescription());
     }
 
     @Test
     void updateTaskFieldNotChanged() {
         Task task = new Task(sample);
         manager.createTask(task);
-        sample.id = task.getId();
+        sample.id = 1;
         Task task2 = new Task(sample);
-        manager.createTask(task2);
-        assertEquals(task.getDescription(), task2.getDescription());
+        manager.updateTask(task2);
+        AbstractTask taskFromStore = manager.getTask(1);
+        assertEquals(task.getDescription(), taskFromStore.getDescription());
     }
 
     @Test
     void EpicStatusEmpty() {
         Epic epic = new Epic(sample);
         manager.createTask(epic);
+        epic = (Epic) manager.getTask(1);
         assertEquals(TaskStatus.NEW, epic.getStatus());
     }
 
@@ -252,6 +265,7 @@ abstract class TaskManagerTest {
     void EpicStatusWithOnlyNewSubTasks() {
         Epic epic = new Epic(sample);
         manager.createTask(epic);
+        epic = (Epic) manager.getTask(1);
 
         SubTask subTask = new SubTask(sample);
         subTask.setEpic(epic);
@@ -261,13 +275,15 @@ abstract class TaskManagerTest {
         subTask2.setEpic(epic);
         manager.createTask(subTask2);
 
-        assertEquals(TaskStatus.NEW, epic.getStatus());
+        Epic taskFromStore = (Epic) manager.getTask(1);
+        assertEquals(TaskStatus.NEW, taskFromStore.getStatus());
     }
 
     @Test
     void EpicStatusWithOnlyDoneSubTasks() {
         Epic epic = new Epic(sample);
         manager.createTask(epic);
+        epic = (Epic) manager.getTask(1);
 
         sample.status = TaskStatus.DONE;
         SubTask subTask = new SubTask(sample);
@@ -277,15 +293,15 @@ abstract class TaskManagerTest {
         SubTask subTask2 = new SubTask(sample);
         subTask2.setEpic(epic);
         manager.createTask(subTask2);
-
-        assertEquals(TaskStatus.DONE, epic.getStatus());
+        Epic taskFromStore = (Epic) manager.getTask(1);
+        assertEquals(TaskStatus.DONE, taskFromStore.getStatus());
     }
 
     @Test
     void EpicStatusWithNewAndDoneSubTasks() {
         Epic epic = new Epic(sample);
         manager.createTask(epic);
-
+        epic = (Epic) manager.getTask(1);
 
         SubTask subTask = new SubTask(sample);
         subTask.setEpic(epic);
@@ -295,17 +311,20 @@ abstract class TaskManagerTest {
         SubTask subTask2 = new SubTask(sample);
         subTask2.setEpic(epic);
         manager.createTask(subTask2);
-
-        assertEquals(TaskStatus.IN_PROGRESS, epic.getStatus());
+        Epic taskFromStore = (Epic) manager.getTask(1);
+        assertEquals(TaskStatus.IN_PROGRESS, taskFromStore.getStatus());
     }
 
     @Test
     void EpicStatusWithOnlyInProgressSubTasks() {
         Epic epic = new Epic(sample);
         manager.createTask(epic);
+        epic = (Epic) manager.getTask(1);
+
 
         sample.status = TaskStatus.IN_PROGRESS;
         SubTask subTask = new SubTask(sample);
+
         subTask.setEpic(epic);
         manager.createTask(subTask);
 
@@ -314,13 +333,15 @@ abstract class TaskManagerTest {
         subTask2.setEpic(epic);
         manager.createTask(subTask2);
 
-        assertEquals(TaskStatus.IN_PROGRESS, epic.getStatus());
+        Epic taskFromStore = (Epic) manager.getTask(1);
+        assertEquals(TaskStatus.IN_PROGRESS, taskFromStore.getStatus());
     }
 
     @Test
     void EpicStatusAllDifferentSubTasks() {
         Epic epic = new Epic(sample);
         manager.createTask(epic);
+        epic = (Epic) manager.getTask(1);
 
         SubTask subTask3 = new SubTask(sample);
         subTask3.setEpic(epic);
@@ -336,13 +357,15 @@ abstract class TaskManagerTest {
         subTask2.setEpic(epic);
         manager.createTask(subTask2);
 
-        assertEquals(TaskStatus.IN_PROGRESS, epic.getStatus());
+        Epic taskFromStore = (Epic) manager.getTask(1);
+        assertEquals(TaskStatus.IN_PROGRESS, taskFromStore.getStatus());
     }
 
     @Test
     void EpicStatusNewAndInProgressSubTasks() {
         Epic epic = new Epic(sample);
         manager.createTask(epic);
+        epic = (Epic) manager.getTask(1);
 
         SubTask subTask3 = new SubTask(sample);
         subTask3.setEpic(epic);
@@ -353,13 +376,15 @@ abstract class TaskManagerTest {
         subTask.setEpic(epic);
         manager.createTask(subTask);
 
-        assertEquals(TaskStatus.IN_PROGRESS, epic.getStatus());
+        Epic taskFromStore = (Epic) manager.getTask(1);
+        assertEquals(TaskStatus.IN_PROGRESS, taskFromStore.getStatus());
     }
 
     @Test
     void EpicStatusDoneAndInProgressSubTasks() {
         Epic epic = new Epic(sample);
         manager.createTask(epic);
+        epic = (Epic) manager.getTask(1);
 
         sample.status = TaskStatus.IN_PROGRESS;
         SubTask subTask = new SubTask(sample);
@@ -371,7 +396,8 @@ abstract class TaskManagerTest {
         subTask2.setEpic(epic);
         manager.createTask(subTask2);
 
-        assertEquals(TaskStatus.IN_PROGRESS, epic.getStatus());
+        Epic taskFromStore = (Epic) manager.getTask(1);
+        assertEquals(TaskStatus.IN_PROGRESS, taskFromStore.getStatus());
     }
 
     @Test
@@ -383,7 +409,7 @@ abstract class TaskManagerTest {
     void historyAdd1Return1() {
         Task task = new Task(sample);
         manager.createTask(task);
-        manager.getTask(task.getId());
+        manager.getTask(1);
         assertEquals(1, manager.history().size());
     }
 
@@ -395,8 +421,8 @@ abstract class TaskManagerTest {
         Task task2 = new Task(sample);
         manager.createTask(task2);
 
-        manager.getTask(task.getId());
-        manager.getTask(task2.getId());
+        manager.getTask(1);
+        manager.getTask(2);
 
         assertEquals(2, manager.history().size());
     }
@@ -409,8 +435,8 @@ abstract class TaskManagerTest {
         Task task2 = new Task(sample);
         manager.createTask(task2);
 
-        manager.getTask(task.getId());
-        manager.getTask(task.getId());
+        manager.getTask(1);
+        manager.getTask(1);
 
         int actual = manager.history().size();
         assertEquals(1, actual);
@@ -424,10 +450,10 @@ abstract class TaskManagerTest {
         Task task2 = new Task(sample);
         manager.createTask(task2);
 
-        manager.getTask(task.getId());
-        manager.getTask(task2.getId());
+        manager.getTask(1);
+        manager.getTask(2);
 
-        manager.removeTask(task2.getId());
+        manager.removeTask(2);
         assertEquals(1, manager.history().size());
     }
 

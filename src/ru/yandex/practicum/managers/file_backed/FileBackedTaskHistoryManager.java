@@ -1,5 +1,7 @@
-package ru.yandex.practicum.managers;
+package ru.yandex.practicum.managers.file_backed;
 
+import ru.yandex.practicum.managers.TaskStore;
+import ru.yandex.practicum.managers.in_memory.InMemoryTaskHistoryManager;
 import ru.yandex.practicum.util.Compressible;
 import ru.yandex.practicum.util.Managers;
 
@@ -21,7 +23,7 @@ public class FileBackedTaskHistoryManager extends InMemoryTaskHistoryManager imp
 
     @Override
     public void decompress(String compressedData) {
-        if (compressedData.isBlank()){
+        if (compressedData.isBlank()) {
             return;
         }
         Arrays.stream(compressedData.split(","))

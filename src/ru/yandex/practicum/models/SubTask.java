@@ -5,9 +5,12 @@ import java.util.List;
 final public class SubTask extends AbstractTask {
     private Epic epic;
 
-    public SubTask(CompressedTaskDto dto) {
+    public SubTask(TaskDto dto) {
         super(dto);
         type = TaskType.SUBTASK;
+        if (dto.epicId != 0 && null != store.getTask(dto.epicId)){
+            setEpic((Epic) store.getTask(dto.epicId));
+        }
     }
 
     public SubTask(String name, String description) {
@@ -42,7 +45,9 @@ final public class SubTask extends AbstractTask {
     @Override
     public AbstractTask update() {
         super.update();
-        epic.addSubtask(this);
+        if (this.epic != null) {
+            epic.addSubtask(this);
+        }
         return this;
     }
 

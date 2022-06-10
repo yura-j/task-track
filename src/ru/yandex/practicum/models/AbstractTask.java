@@ -16,6 +16,7 @@ abstract public class AbstractTask implements Comparable<AbstractTask> {
     protected String name = "";
     protected String description = "";
     protected TaskStatus status = TaskStatus.NEW;
+
     protected TaskType type;
     protected int duration = 0;
     protected LocalDateTime startTime;
@@ -28,7 +29,7 @@ abstract public class AbstractTask implements Comparable<AbstractTask> {
     }
 
     //Сериализация
-    public AbstractTask(CompressedTaskDto dto) {
+    public AbstractTask(TaskDto dto) {
         this.id = dto.id;
         this.name = dto.name;
         this.description = dto.description;
@@ -49,12 +50,28 @@ abstract public class AbstractTask implements Comparable<AbstractTask> {
         dto.duration = this.extractDuration();
         return dto;
     }
+
+    public TaskDto toTaskDto() {
+        TaskDto dto = new TaskDto();
+        dto.id = this.id;
+        dto.name = this.name;
+        dto.description = this.description;
+        dto.status = this.status;
+        dto.type = this.type;
+        dto.epicId = this.getEpicId();
+        dto.startTime = this.extractStartTime();
+        dto.duration = this.extractDuration();
+        return dto;
+    }
+
     protected Integer getEpicId() {
         return 0;
     }
+
     protected LocalDateTime extractStartTime() {
         return startTime;
     }
+
     protected int extractDuration() {
         return duration;
     }
@@ -102,6 +119,10 @@ abstract public class AbstractTask implements Comparable<AbstractTask> {
     //Геттеры, Сеттеры
     public void setStatus(TaskStatus status) {
         this.status = status;
+    }
+
+    public TaskType getType() {
+        return type;
     }
 
     public int getId() {

@@ -1,6 +1,8 @@
-package ru.yandex.practicum.managers;
+package ru.yandex.practicum.managers.in_memory;
 
 import ru.yandex.practicum.exceptions.TimeTableBusyException;
+import ru.yandex.practicum.managers.TaskStore;
+import ru.yandex.practicum.managers.TimeTable;
 import ru.yandex.practicum.models.AbstractTask;
 import ru.yandex.practicum.util.Managers;
 
