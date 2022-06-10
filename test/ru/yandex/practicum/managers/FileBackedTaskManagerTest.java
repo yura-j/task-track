@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import ru.yandex.practicum.managers.file_backed.FileBackedTaskManager;
 import ru.yandex.practicum.util.Managers;
 
-class FileBackedTaskManagerTest extends TaskManagerTest{
+class FileBackedTaskManagerTest extends TaskManagerTest {
 
     @BeforeEach
     @Override

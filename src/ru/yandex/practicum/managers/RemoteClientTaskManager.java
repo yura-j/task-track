@@ -45,7 +45,6 @@ public class RemoteClientTaskManager implements TaskManager {
                 .GET()
                 .build();
         HttpServerResponse result = send(request);
-        List<AbstractTask> answer = null;
         Collection<Object> taskList = (Collection) result.payload;
         return taskList
                 .stream()
@@ -63,7 +62,6 @@ public class RemoteClientTaskManager implements TaskManager {
                 .GET()
                 .build();
         HttpServerResponse result = send(request);
-        List<AbstractTask> answer = null;
         Collection<Object> taskList = (Collection) result.payload;
         return taskList
                 .stream()
@@ -81,7 +79,6 @@ public class RemoteClientTaskManager implements TaskManager {
                 .GET()
                 .build();
         HttpServerResponse result = send(request);
-        List<AbstractTask> answer = null;
         Collection<Object> taskList = (Collection) result.payload;
         return taskList
                 .stream()
@@ -99,7 +96,6 @@ public class RemoteClientTaskManager implements TaskManager {
                 .GET()
                 .build();
         HttpServerResponse result = send(request);
-        List<AbstractTask> answer = null;
         Collection<Object> taskList = (Collection) result.payload;
         return taskList
                 .stream()
@@ -182,7 +178,7 @@ public class RemoteClientTaskManager implements TaskManager {
                 .GET()
                 .build();
         HttpServerResponse result = send(request);
-        List<AbstractTask> answer = null;
+
         Collection<Object> taskList = (Collection) result.payload;
         return taskList
                 .stream()

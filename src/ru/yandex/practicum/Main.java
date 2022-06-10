@@ -4,6 +4,8 @@ import ru.yandex.practicum.kv_server.KVServer;
 import ru.yandex.practicum.app.Application;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 
 /*
@@ -32,5 +34,15 @@ public class Main {
         kv.start();
         Application app = new Application();
         app.start();
+
+
+        System.out.println("Нажмите любую строчку, чтобы остановить программу");
+        Scanner scanner = new Scanner(System.in);
+        String stopSignal = scanner.nextLine();
+        System.out.println("Завершаю работу");
+
+
+        app.stop();
+        kv.stop();
     }
 }
